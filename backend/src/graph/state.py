@@ -7,7 +7,7 @@ class ComplianceIssue(TypedDict):
     category: str
     description: str
     severity: str
-    timestampt: Optional[str]
+    timestamp: Optional[str]
 
 class VideoAuditState(TypedDict):
 
