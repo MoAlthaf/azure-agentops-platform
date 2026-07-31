@@ -16,7 +16,8 @@ logger=logging.getLogger("video-indexer")
 class VideoIndexerService:
     def __init__(self):
         self.account_id = os.getenv("AZURE_VI_ACCOUNT_ID")
-        self.location=os.getenv("AZURE_VI_LOCATION")
+        raw_location = os.getenv("AZURE_VI_LOCATION", "")
+        self.location = raw_location.replace(" ", "").lower()
         self.subscription_id=os.getenv("AZURE_SUBSCRIPTION_ID")
         self.resource_group=os.getenv("AZURE_RESOURCE_GROUP")
         self.vi_name=os.getenv("AZURE_VI_NAME","porject-brand-guardian")
@@ -80,7 +81,7 @@ class VideoIndexerService:
         arm_token =self.get_access_token()
         vi_token=self.get_account_token(arm_token)
 
-        api_url=f"https://api.videoindexer.ai/{self.location}/{self.account_id}/Videos"
+        api_url=f"https://api.videoindexer.ai/{self.location}/Accounts/{self.account_id}/Videos"
 
         params={
             "accessToken": vi_token,
@@ -104,7 +105,7 @@ class VideoIndexerService:
             arm_token=self.get_access_token()
             vi_token=self.get_account_token(arm_token)
 
-            url=f"https://api.videoindexer.ai/{self.location}/{self.account_id}/Videos/{video_id}/Index"
+            url=f"https://api.videoindexer.ai/{self.location}/Accounts/{self.account_id}/Videos/{video_id}/Index"
             params={"accessToken":vi_token}
             response=requests.get(url,params=params)
             data=response.json()
