@@ -49,6 +49,7 @@ class AuditResponse(BaseModel):
     status: str
     final_report: str
     compliance_results: List[ComplianceIssue]
+    errors: List[str]
 
 @app.post("/audit",response_model=AuditResponse)
 async def audit_video(request:AuditRequest):
@@ -79,7 +80,8 @@ async def audit_video(request:AuditRequest):
                     category=issue.get("category"),
                     description=issue.get("description")
                 ) for issue in final_state.get("compliance_results",[])
-            ]
+            ],
+            errors=final_state.get("errors",[])
         )
     except Exception as e:
         logger.error(f"Audit failed for session {session_id}: {e}")
