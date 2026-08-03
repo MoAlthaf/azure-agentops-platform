@@ -117,6 +117,19 @@ def audio_content_node(state: VideoAuditState) -> Dict[str, Any]:
         ocr_content = "\n".join(ocr_text)
         query_text = f"Transcript:\n{transcript}\n\nOn-screen text:\n{ocr_content}"
         docs = vector_store.similarity_search(query_text, k=3)
+
+        if not docs:
+            logger.error("[Auditor] No compliance rules retrieved from the knowledge base index")
+            return {
+                "errors": [
+                    "No compliance rules were retrieved from the Azure AI Search index. "
+                    "The audit was not run because it would not be grounded in any rules. "
+                    "Check that the index has been populated (see backend/scripts/index_documents.py)."
+                ],
+                "final_status": "ERROR",
+                "final_report": "Audit could not be completed because no compliance rules were found in the knowledge base.",
+            }
+
         retrieved_rules = "\n\n".join(doc.page_content for doc in docs)
 
         system_prompt = f"""
